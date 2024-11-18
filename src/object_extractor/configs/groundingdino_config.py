@@ -1,0 +1,13 @@
+max_text_len = 256
+text_encoder_type = "bert-base-uncased"
+num_queries = 900
+position_embedding = "sine"
+enc_layers = 6
+dec_layers = 6
+dim_feedforward = 2048
+hidden_dim = 256
+dropout = 0.0
+nheads = 8
+num_patterns = 0
+text_threshold = 0.25
+box_threshold = 0.35
