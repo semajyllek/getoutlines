@@ -1,27 +1,4 @@
-# pyproject.toml
-"""
-[project]
-name = "object_extractor"
-version = "0.1.0"
-description = "Extract and process object outlines from images"
-requires-python = ">=3.8"
-dependencies = [
-    "torch>=2.0.0",
-    "numpy",
-    "opencv-python",
-    "segment-anything",
-    "pillow",
-    "typer",
-    "supervision",  # Helper for visualization
-    "groundingdino-py"  # Added GroundingDINO dependency
-]
 
-[tool.setuptools.package-data]
-object_extractor = ["configs/*"]
-"""
-
-# README.md
-"""
 # Object Extractor
 
 A tool for extracting object outlines from images using Segment Anything (SAM) and GroundingDINO.
