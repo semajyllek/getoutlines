@@ -26,8 +26,14 @@ pe_temperatureH = 20
 pe_temperatureW = 20
 pe_temperature = 20
 
-# Model Parameters
+# Backbone Config
+backbone = 'swin_T_224_1k'  # Added
+return_interm_indices = [1, 2, 3]  # Added
+backbone_freeze_keywords = None
 use_checkpoint = True
+
+# Model Parameters
+dilation = False  # Added
 checkpoint_activations = True
 aux_loss = True
 with_box_refine = True
