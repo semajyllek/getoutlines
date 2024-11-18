@@ -1,3 +1,6 @@
+modelname = "groundingdino"  # Required!
+batch_size_train = 16
+batch_size_eval = 8
 max_text_len = 256
 text_encoder_type = "bert-base-uncased"
 num_queries = 900
