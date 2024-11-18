@@ -20,6 +20,13 @@ nheads = 8
 num_patterns = 0
 text_threshold = 0.25
 box_threshold = 0.35
+pre_norm = True  # Added
+enforce_input_proj = False  # Added
+
+# Transformer
+hidden_dim = 256
+pad_token_id = 0
+max_position_embeddings = 256
 
 # Positional Encoding
 pe_temperatureH = 20
@@ -27,13 +34,13 @@ pe_temperatureW = 20
 pe_temperature = 20
 
 # Backbone Config
-backbone = 'swin_T_224_1k'  # Added
-return_interm_indices = [1, 2, 3]  # Added
+backbone = 'swin_T_224_1k'
+return_interm_indices = [1, 2, 3]
 backbone_freeze_keywords = None
 use_checkpoint = True
 
 # Model Parameters
-dilation = False  # Added
+dilation = False
 checkpoint_activations = True
 aux_loss = True
 with_box_refine = True
