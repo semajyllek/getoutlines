@@ -1,7 +1,8 @@
 import numpy as np
 import torch
+import torchvision.transforms as T
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Optional
+from typing import List, Optional
 from dataclasses import dataclass
 from pathlib import Path
 import importlib.resources
