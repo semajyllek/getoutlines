@@ -34,11 +34,16 @@ transformer_activation = "relu"
 dec_n_points = 4
 enc_n_points = 4
 
+# Transformer Checkpoint Parameters
+use_transformer_ckpt = True  # Added
+use_checkpoint_for_decoder = True  # Added
+use_checkpoint_for_encoder = True  # Added
+
 # Fusion Parameters
-use_fusion_layer = True  # Added
-use_checkpoint_for_fusion = True  # Added
-fusion_dropout = 0.1  # Added
-fusion_droppath = 0.1  # Added
+use_fusion_layer = True
+use_checkpoint_for_fusion = True
+fusion_dropout = 0.1
+fusion_droppath = 0.1
 
 # Two-Stage Parameters
 two_stage_type = 'standard'
