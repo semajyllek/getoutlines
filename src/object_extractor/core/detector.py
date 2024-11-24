@@ -132,7 +132,7 @@ class SAMDetector(ObjectDetector):
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
 
-        
+
     def prepare_image(self, image: np.ndarray) -> torch.Tensor:
         """Prepare image for GroundingDINO"""
         # Convert numpy array to PIL Image
@@ -182,7 +182,10 @@ class SAMDetector(ObjectDetector):
         """Process and filter model outputs"""
         # Get predictions
         boxes = outputs['pred_boxes'][0].cpu().numpy()
-        scores = outputs['pred_scores'][0].cpu().numpy()
+        logits = outputs['pred_logits'][0].cpu().numpy()  # Changed from pred_scores
+        
+        # Convert logits to scores using sigmoid or softmax
+        scores = 1 / (1 + np.exp(-logits.max(-1)))  # sigmoid of max logit
         
         # Filter by confidence
         score_mask = scores > config.confidence_threshold
