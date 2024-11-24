@@ -20,7 +20,8 @@ nheads = 8
 num_patterns = 0
 text_threshold = 0.25
 box_threshold = 0.35
-pre_norm = True
+pre_norm = False  # Changed from True to False
+normalize_before = False  # Added
 enforce_input_proj = False
 
 # Transformer
@@ -33,11 +34,12 @@ nheads_fusion = 8
 transformer_activation = "relu"
 dec_n_points = 4
 enc_n_points = 4
+return_intermediate_dec = True  # Added
 
 # Text Cross Attention Parameters
-use_text_cross_attention = True  # Added
-text_dropout = 0.1  # Added
-fusion_header_type = "text"  # Added
+use_text_cross_attention = True
+text_dropout = 0.1
+fusion_header_type = "text"
 
 # Transformer Checkpoint Parameters
 use_transformer_ckpt = True
