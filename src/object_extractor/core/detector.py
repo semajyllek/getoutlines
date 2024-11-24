@@ -6,6 +6,8 @@ from typing import List, Tuple, Optional
 from dataclasses import dataclass
 from pathlib import Path
 import importlib.resources
+from PIL import Image
+
 
 @dataclass
 class DetectionConfig:
@@ -16,6 +18,8 @@ class DetectionConfig:
     prefer_center: bool = False
     min_box_size: Optional[int] = 100  # Minimum box size in pixels
 
+
+
 class ObjectDetector(ABC):
     @abstractmethod
     def initialize(self):
@@ -24,6 +28,7 @@ class ObjectDetector(ABC):
     @abstractmethod
     def detect(self, image: np.ndarray, config: DetectionConfig):
         pass
+
 
 class SAMDetector(ObjectDetector):
     def __init__(
@@ -79,13 +84,26 @@ class SAMDetector(ObjectDetector):
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
 
+        
     def prepare_image(self, image: np.ndarray):
-        """Prepare image for GroundingDINO"""
-        transform = self.transform
-        image_transformed, _ = transform(image, None)
+        """
+        Prepare image for GroundingDINO.
+        Converts numpy array to PIL Image for transforms.
+        """
+        # Convert numpy array to PIL Image
+        if isinstance(image, np.ndarray):
+            # If image is BGR (from OpenCV), convert to RGB
+            if len(image.shape) == 3 and image.shape[2] == 3:
+                image = image[..., ::-1]  # BGR to RGB
+            pil_image = Image.fromarray(image)
+        else:
+            pil_image = image
+            
+        # Apply transforms
+        image_transformed, _ = self.transform(pil_image, None)
         return image_transformed
         
-    def detect(self, image: np.ndarray, config: DetectionConfig) -> List[Tuple[np.ndarray, np.ndarray, float, str]]:
+    def detect(self, image: np.ndarray, config: DetectionConfig):
         """
         Detect objects based on configuration
         Returns: List of (binary_mask, points, confidence, class_name)
