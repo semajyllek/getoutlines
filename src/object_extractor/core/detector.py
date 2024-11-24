@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import importlib.resources
 from PIL import Image
+from groundingdino.util.misc import NestedTensor
 
 
 @dataclass
@@ -30,7 +31,7 @@ def make_nested_tensor(tensors: List[torch.Tensor]):
         tensor[i] = tensor_i
         mask[i, :tensor_i.shape[1], :tensor_i.shape[2]] = False
         
-    return torch.nn.modules.container.NestedTensor(tensor, mask)
+    return NestedTensor(tensor, mask)
 
 class RandomResize:
     """Custom resize transform that maintains aspect ratio"""
@@ -177,7 +178,7 @@ class SAMDetector(ObjectDetector):
         boxes = outputs['pred_boxes'][0].cpu().numpy()
         logits = outputs['pred_logits'][0].cpu().numpy()
         phrases = outputs['pred_phrases']
-        
+
         # Filter by confidence
         scores = logits.max(axis=-1)
         mask = scores > config.confidence_threshold
