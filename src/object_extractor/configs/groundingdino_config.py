@@ -34,26 +34,32 @@ transformer_activation = "relu"
 dec_n_points = 4
 enc_n_points = 4
 
+# Fusion Parameters
+use_fusion_layer = True  # Added
+use_checkpoint_for_fusion = True  # Added
+fusion_dropout = 0.1  # Added
+fusion_droppath = 0.1  # Added
+
 # Two-Stage Parameters
-two_stage_type = 'standard'  # Added
-two_stage_pat_embed = 0  # Added
-two_stage_add_query_num = 0  # Added
-two_stage_bbox_embed_share = False  # Added
-two_stage_class_embed_share = False  # Added
-two_stage_learn_wh = False  # Added
-two_stage_default_hw = 0.1  # Added
-two_stage_keep_all_tokens = False  # Added
+two_stage_type = 'standard'
+two_stage_pat_embed = 0
+two_stage_add_query_num = 0
+two_stage_bbox_embed_share = False
+two_stage_class_embed_share = False
+two_stage_learn_wh = False
+two_stage_default_hw = 0.1
+two_stage_keep_all_tokens = False
 two_stage_num_proposals = 900
 assign_first_stage = True
-embed_init_tgt = True  # Added
-use_text_enhancer = False  # Added
+embed_init_tgt = True
+use_text_enhancer = False
 
 # Additional Model Parameters
 with_mask = True
 mask_dim = 256
 freeze_text_encoder = True
 random_refpoints_xy = False
-dn_labelbook_size = 100  # Added
+dn_labelbook_size = 100
 
 # Positional Encoding
 pe_temperatureH = 20
