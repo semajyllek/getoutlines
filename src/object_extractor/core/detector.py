@@ -19,9 +19,26 @@ class DetectionConfig:
     min_box_size: Optional[int] = 100  # Minimum box size in pixels
 
 
-class RandomResize(T.RandomResize):
-    def forward(self, image):
-        size = self.get_size(image.size[0], image.size[1])
+class RandomResize:
+    """Custom resize transform that maintains aspect ratio"""
+    def __init__(self, target_size: int, max_size: int = None):
+        self.target_size = target_size
+        self.max_size = max_size
+
+    def get_size(self, image: Image.Image) -> Tuple[int, int]:
+        w, h = image.size
+        scale = self.target_size / min(w, h)
+        
+        if self.max_size is not None:
+            scale = min(scale, self.max_size / max(w, h))
+            
+        new_w = int(w * scale)
+        new_h = int(h * scale)
+        
+        return (new_w, new_h)
+
+    def __call__(self, image: Image.Image) -> Image.Image:
+        size = self.get_size(image)
         return T.functional.resize(image, size)
 
 
