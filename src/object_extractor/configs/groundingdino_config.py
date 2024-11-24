@@ -34,10 +34,15 @@ transformer_activation = "relu"
 dec_n_points = 4
 enc_n_points = 4
 
+# Text Cross Attention Parameters
+use_text_cross_attention = True  # Added
+text_dropout = 0.1  # Added
+fusion_header_type = "text"  # Added
+
 # Transformer Checkpoint Parameters
-use_transformer_ckpt = True  # Added
-use_checkpoint_for_decoder = True  # Added
-use_checkpoint_for_encoder = True  # Added
+use_transformer_ckpt = True
+use_checkpoint_for_decoder = True
+use_checkpoint_for_encoder = True
 
 # Fusion Parameters
 use_fusion_layer = True
