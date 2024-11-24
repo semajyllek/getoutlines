@@ -29,6 +29,11 @@ pe_temperature = 20
 query_dim = 4
 random_refpoints_xy = False
 
+# Fusion Parameters
+fusion_dropout = 0.1  # Added
+fusion_droppath = 0.1  # Added
+fusion_header_type = "text"  # Added
+
 # Backbone Config
 backbone = 'swin_T_224_1k'
 return_interm_indices = [1, 2, 3]
