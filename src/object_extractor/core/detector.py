@@ -1,4 +1,3 @@
-# src/object_extractor/core/detector.py
 import numpy as np
 import torch
 from abc import ABC, abstractmethod
@@ -17,6 +16,12 @@ class DetectionConfig:
     max_objects: Optional[int] = None
     prefer_center: bool = False
     min_box_size: Optional[int] = 100  # Minimum box size in pixels
+
+
+class RandomResize(T.RandomResize):
+    def forward(self, image):
+        size = self.get_size(image.size[0], image.size[1])
+        return T.functional.resize(image, size)
 
 
 
@@ -79,7 +84,7 @@ class SAMDetector(ObjectDetector):
         
         # Save transform for later use
         self.transform = T.Compose([
-            T.RandomResize([800], max_size=1333),
+            RandomResize([800], max_size=1333),
             T.ToTensor(),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
@@ -189,3 +194,5 @@ class SAMDetector(ObjectDetector):
             results.append((binary_mask, center_point, score, phrase))
             
         return results
+    
+
