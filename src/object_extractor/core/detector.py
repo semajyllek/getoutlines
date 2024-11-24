@@ -77,16 +77,26 @@ class SAMDetector(ObjectDetector):
     def __init__(
         self,
         model_path: str,
-        dino_config_path: str,
         dino_checkpoint_path: str,
-        model_type: str = "vit_h"
+        model_type: str = "vit_h",
+        dino_config_path: Optional[str] = None  # Made optional
     ):
         self.model_path = model_path
         self.model_type = model_type
-        self.dino_config_path = dino_config_path
         self.dino_checkpoint_path = dino_checkpoint_path
+        self._config_path = dino_config_path  # Store as private variable
         self.predictor = None
         self.grounding_model = None
+        
+    def _get_config_path(self) -> str:
+        """Get config path, using packaged config if none provided"""
+        if self._config_path is not None:
+            return self._config_path
+            
+        # Use packaged config
+        import importlib.resources
+        with importlib.resources.path('object_extractor.configs', 'groundingdino_config.py') as config_path:
+            return str(config_path)
         
     def initialize(self):
         """Initialize both SAM and GroundingDINO models"""
@@ -102,8 +112,9 @@ class SAMDetector(ObjectDetector):
         sam.to(device)
         self.predictor = SamPredictor(sam)
         
-        # Initialize GroundingDINO
-        args = SLConfig.fromfile(self.dino_config_path)
+        # Initialize GroundingDINO using config path
+        config_path = self._get_config_path()
+        args = SLConfig.fromfile(config_path)
         self.grounding_model = build_model(args)
         checkpoint = torch.load(self.dino_checkpoint_path, map_location='cpu')
         self.grounding_model.load_state_dict(clean_state_dict(checkpoint['model']), strict=False)
@@ -194,8 +205,7 @@ class SAMDetector(ObjectDetector):
 
     def _get_sam_mask(
         self, 
-        box: np.ndarray, 
-        image: np.ndarray
+        box: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         """Get SAM mask for a given box"""
         # Calculate center point
@@ -243,7 +253,7 @@ class SAMDetector(ObjectDetector):
         detections = []
         
         for box, score in zip(boxes_pixel, scores):
-            binary_mask, center_point = self._get_sam_mask(box, image)
+            binary_mask, center_point = self._get_sam_mask(box)
             detection = Detection(
                 binary_mask=binary_mask,
                 center_point=center_point,
