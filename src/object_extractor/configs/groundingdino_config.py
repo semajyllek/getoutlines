@@ -6,6 +6,14 @@ lr = 1e-4
 max_text_len = 256
 text_encoder_type = "bert-base-uncased"
 
+# Text Processing Parameters
+sub_sentence_present = True  # Added
+combine_method = "concat"    # Added
+text_processing = {         # Added
+    "split_sentence": True,
+    "max_tokens": 256,
+}
+
 # GroundingDINO Architecture
 num_queries = 900
 position_embedding = "sine"
@@ -23,8 +31,9 @@ normalize_before = False
 enforce_input_proj = False
 
 # Decoder Prediction Sharing
-dec_pred_bbox_embed_share = True  # Added
-dec_pred_class_embed_share = True  # Added
+dec_pred_bbox_embed_share = True
+dec_pred_class_embed_share = True
+
 
 # Transformer
 hidden_dim = 256
