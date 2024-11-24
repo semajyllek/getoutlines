@@ -53,9 +53,19 @@ dilation = False
 text_threshold = 0.25
 box_threshold = 0.35
 with_box_refine = True
+
+
+# Two-Stage Parameters
 two_stage = True
 two_stage_type = 'standard'
 two_stage_num_proposals = 900
+two_stage_bbox_embed_share = False                  
+two_stage_class_embed_share = False  
+two_stage_learn_wh = False  
+two_stage_default_hw = 0.1  
+two_stage_keep_all_tokens = False  
+two_stage_pat_embed = 0  
+two_stage_add_query_num = 0  
 assign_first_stage = True
 embed_init_tgt = True
 use_text_enhancer = False
