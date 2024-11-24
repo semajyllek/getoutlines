@@ -12,6 +12,14 @@ dec_layers = 6
 pre_norm = False
 normalize_before = False
 
+
+# DN (Denoising) Parameters
+dn_labelbook_size = 100  
+dn_box_noise_scale = 0.4  
+dn_label_noise_ratio = 0.5  
+dn_label_cost = 0.5  
+dn_number = 100  
+
 # Transformer Parameters
 nheads = 8
 dim_feedforward = 2048
