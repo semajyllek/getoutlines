@@ -1,5 +1,3 @@
-# src/object_extractor/configs/groundingdino_config.py
-
 modelname = "groundingdino"
 batch_size_train = 16
 batch_size_eval = 8
