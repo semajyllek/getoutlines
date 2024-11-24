@@ -104,7 +104,12 @@ class SAMDetector(ObjectDetector):
         from groundingdino.models import build_model
         from groundingdino.util.slconfig import SLConfig
         from groundingdino.util.utils import clean_state_dict
-        from groundingdino.datasets.transforms import Compose
+        from groundingdino.datasets.transforms import (
+            Compose,
+            Normalize,
+            RandomResize,
+            ToTensor
+        )
         
         # Initialize SAM
         sam = sam_model_registry[self.model_type](checkpoint=self.model_path)
@@ -112,7 +117,7 @@ class SAMDetector(ObjectDetector):
         sam.to(device)
         self.predictor = SamPredictor(sam)
         
-        # Initialize GroundingDINO using config path
+        # Initialize GroundingDINO
         config_path = self._get_config_path()
         args = SLConfig.fromfile(config_path)
         self.grounding_model = build_model(args)
@@ -120,12 +125,13 @@ class SAMDetector(ObjectDetector):
         self.grounding_model.load_state_dict(clean_state_dict(checkpoint['model']), strict=False)
         self.grounding_model.to(device)
         
-        # Define transform
+        # Define transform using GroundingDINO's transforms
         self.transform = Compose([
-            RandomResize(800, max_size=1333),
-            T.ToTensor(),
-            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            RandomResize([800], max_size=1333),
+            ToTensor(),
+            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
+
         
     def prepare_image(self, image: np.ndarray) -> torch.Tensor:
         """Prepare image for GroundingDINO"""
