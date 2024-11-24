@@ -57,7 +57,7 @@ This is especially useful for:
 import cv2
 import numpy as np
 from dataclasses import dataclass
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 
 @dataclass
 class ObjectOutline:
@@ -71,15 +71,21 @@ class OutlineProcessor:
         self.target_width = target_width
         self.target_height = target_height
         
-    def extract_outline(self, binary_mask: np.ndarray) -> ObjectOutline:
+   
+    def extract_outline(self, binary_mask: np.ndarray) -> Optional[ObjectOutline]:
+        """
+        Convert a binary mask to a normalized outline.
+        Returns None if no valid contours are found.
+        """
+        # Find the outline contours
         contours, _ = cv2.findContours(
             binary_mask, 
-            cv2.RETR_EXTERNAL, 
+            cv2.RETR_EXTERNAL,
             cv2.CHAIN_APPROX_TC89_KCOS
         )
         
         if not contours:
-            raise ValueError("No contours found in image")
+            return None
             
         main_contour = max(contours, key=cv2.contourArea)
         points = main_contour.squeeze().tolist()
