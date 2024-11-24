@@ -27,9 +27,18 @@ enforce_input_proj = False
 hidden_dim = 256
 pad_token_id = 0
 max_position_embeddings = 256
-query_dim = 4  # Added
-num_feature_levels = 4  # Added
-nheads_fusion = 8  # Added
+query_dim = 4
+num_feature_levels = 4
+nheads_fusion = 8
+transformer_activation = "relu"  # Added
+dec_n_points = 4  # Added
+enc_n_points = 4  # Added
+two_stage_num_proposals = 900  # Added
+assign_first_stage = True  # Added
+with_mask = True  # Added
+mask_dim = 256  # Added
+freeze_text_encoder = True  # Added
+random_refpoints_xy = False  # Added
 
 # Positional Encoding
 pe_temperatureH = 20
