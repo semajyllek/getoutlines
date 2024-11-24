@@ -20,9 +20,13 @@ nheads = 8
 num_patterns = 0
 text_threshold = 0.25
 box_threshold = 0.35
-pre_norm = False  # Changed from True to False
-normalize_before = False  # Added
+pre_norm = False
+normalize_before = False
 enforce_input_proj = False
+
+# Decoder Prediction Sharing
+dec_pred_bbox_embed_share = True  # Added
+dec_pred_class_embed_share = True  # Added
 
 # Transformer
 hidden_dim = 256
@@ -34,7 +38,7 @@ nheads_fusion = 8
 transformer_activation = "relu"
 dec_n_points = 4
 enc_n_points = 4
-return_intermediate_dec = True  # Added
+return_intermediate_dec = True
 
 # Text Cross Attention Parameters
 use_text_cross_attention = True
