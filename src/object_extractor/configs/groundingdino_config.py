@@ -12,13 +12,12 @@ dec_layers = 6
 pre_norm = False
 normalize_before = False
 
-
-# DN (Denoising) Parameters
-dn_labelbook_size = 100  
-dn_box_noise_scale = 0.4  
-dn_label_noise_ratio = 0.5  
-dn_label_cost = 0.5  
-dn_number = 100  
+# Text Parameters
+max_text_len = 256  
+pad_token_id = 0  
+max_position_embeddings = 256  
+text_dropout = 0.1
+sub_sentence_present = True
 
 # Transformer Parameters
 nheads = 8
@@ -30,6 +29,13 @@ transformer_activation = "relu"
 num_patterns = 0
 num_feature_levels = 4
 
+# DN (Denoising) Parameters
+dn_labelbook_size = 100
+dn_box_noise_scale = 0.4
+dn_label_noise_ratio = 0.5
+dn_label_cost = 0.5
+dn_number = 100
+
 # Position Encoding
 pe_temperatureH = 20
 pe_temperatureW = 20
@@ -37,10 +43,23 @@ pe_temperature = 20
 query_dim = 4
 random_refpoints_xy = False
 
+# Two-Stage Parameters
+two_stage = True
+two_stage_type = 'standard'
+two_stage_num_proposals = 900
+two_stage_bbox_embed_share = False
+two_stage_class_embed_share = False
+two_stage_learn_wh = False
+two_stage_default_hw = 0.1
+two_stage_keep_all_tokens = False
+two_stage_pat_embed = 0
+two_stage_add_query_num = 0
+assign_first_stage = True
+
 # Fusion Parameters
-fusion_dropout = 0.1  # Added
-fusion_droppath = 0.1  # Added
-fusion_header_type = "text"  # Added
+fusion_dropout = 0.1
+fusion_droppath = 0.1
+fusion_header_type = "text"
 
 # Backbone Config
 backbone = 'swin_T_224_1k'
@@ -53,31 +72,15 @@ dilation = False
 text_threshold = 0.25
 box_threshold = 0.35
 with_box_refine = True
-
-
-# Two-Stage Parameters
-two_stage = True
-two_stage_type = 'standard'
-two_stage_num_proposals = 900
-two_stage_bbox_embed_share = False                  
-two_stage_class_embed_share = False  
-two_stage_learn_wh = False  
-two_stage_default_hw = 0.1  
-two_stage_keep_all_tokens = False  
-two_stage_pat_embed = 0  
-two_stage_add_query_num = 0  
-assign_first_stage = True
 embed_init_tgt = True
 use_text_enhancer = False
 dec_pred_bbox_embed_share = True
 dec_pred_class_embed_share = True
 use_text_cross_attention = True
-text_dropout = 0.1
 use_fusion_layer = True
 use_checkpoint_for_fusion = True
 use_transformer_ckpt = True
 use_checkpoint_for_encoder = True
 use_checkpoint_for_decoder = True
-sub_sentence_present = True
 enforce_input_proj = False
 return_intermediate_dec = True
