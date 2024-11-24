@@ -21,13 +21,14 @@ class DetectionConfig:
 
 class RandomResize:
     """Custom resize transform that maintains aspect ratio"""
-    def __init__(self, target_size: int, max_size: int = None):
-        self.target_size = target_size
+    def __init__(self, target_size: int, max_size: Optional[int] = None):
+        self.target_size = target_size if isinstance(target_size, (list, tuple)) else [target_size]
         self.max_size = max_size
 
     def get_size(self, image: Image.Image) -> Tuple[int, int]:
         w, h = image.size
-        scale = self.target_size / min(w, h)
+        target_size = self.target_size[0]  # Use first size if multiple provided
+        scale = target_size / min(w, h)
         
         if self.max_size is not None:
             scale = min(scale, self.max_size / max(w, h))
@@ -37,11 +38,17 @@ class RandomResize:
         
         return (new_w, new_h)
 
-    def __call__(self, image: Image.Image) -> Image.Image:
+    def __call__(self, image: Image.Image, target: Optional[dict] = None) -> Tuple[Image.Image, Optional[dict]]:
+        """
+        Args:
+            image: PIL Image to resize
+            target: Optional target dict (for compatibility with GroundingDINO)
+        Returns:
+            Tuple of (resized_image, target)
+        """
         size = self.get_size(image)
-        return T.functional.resize(image, size)
-
-
+        resized_image = T.functional.resize(image, size)
+        return resized_image, target
 
 class ObjectDetector(ABC):
     @abstractmethod
@@ -100,17 +107,18 @@ class SAMDetector(ObjectDetector):
         self.grounding_model.to(device)
         self.grounding_model.eval()
         
-        self.transform = T.Compose([
-            RandomResize(target_size=800, max_size=1333),  # Using our custom RandomResize
+        from groundingdino.datasets.transforms import Compose
+        self.transform = Compose([
+            RandomResize(800, max_size=1333),
             T.ToTensor(),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
-
+            
         
-    def prepare_image(self, image: np.ndarray):
+    def prepare_image(self, image: np.ndarray) -> torch.Tensor:
         """
         Prepare image for GroundingDINO.
-        Converts numpy array to PIL Image for transforms.
+        Returns: Tensor of shape [C, H, W]
         """
         # Convert numpy array to PIL Image
         if isinstance(image, np.ndarray):
