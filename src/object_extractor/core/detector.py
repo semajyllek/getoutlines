@@ -19,6 +19,19 @@ class DetectionConfig:
     min_box_size: Optional[int] = 100  # Minimum box size in pixels
 
 
+def make_nested_tensor(tensors: List[torch.Tensor]):
+    """Convert a list of tensors to GroundingDINO's expected nested tensor format"""
+    batch_shape = [len(tensors)] + list(tensors[0].shape)
+    b, c, h, w = batch_shape
+    tensor = torch.zeros(batch_shape, dtype=tensors[0].dtype)
+    mask = torch.ones((b, h, w), dtype=torch.bool)
+    
+    for i, tensor_i in enumerate(tensors):
+        tensor[i] = tensor_i
+        mask[i, :tensor_i.shape[1], :tensor_i.shape[2]] = False
+        
+    return torch.nn.modules.container.NestedTensor(tensor, mask)
+
 class RandomResize:
     """Custom resize transform that maintains aspect ratio"""
     def __init__(self, target_size: int, max_size: Optional[int] = None):
@@ -39,18 +52,15 @@ class RandomResize:
         return (new_w, new_h)
 
     def __call__(self, image: Image.Image, target: Optional[dict] = None) -> Tuple[Image.Image, Optional[dict]]:
-        """
-        Args:
-            image: PIL Image to resize
-            target: Optional target dict (for compatibility with GroundingDINO)
-        Returns:
-            Tuple of (resized_image, target)
-        """
         size = self.get_size(image)
         resized_image = T.functional.resize(image, size)
         return resized_image, target
+    
+
+
 
 class ObjectDetector(ABC):
+    # abstract detector class, must have detect method that takes a numpy array and a DetectionConfig object w/ req. fields 
     @abstractmethod
     def initialize(self):
         pass
@@ -58,6 +68,8 @@ class ObjectDetector(ABC):
     @abstractmethod
     def detect(self, image: np.ndarray, config: DetectionConfig):
         pass
+
+
 
 
 class SAMDetector(ObjectDetector):
@@ -118,7 +130,7 @@ class SAMDetector(ObjectDetector):
     def prepare_image(self, image: np.ndarray) -> torch.Tensor:
         """
         Prepare image for GroundingDINO.
-        Returns: Tensor of shape [C, H, W]
+        Returns: Properly formatted nested tensor
         """
         # Convert numpy array to PIL Image
         if isinstance(image, np.ndarray):
@@ -131,8 +143,14 @@ class SAMDetector(ObjectDetector):
             
         # Apply transforms
         image_transformed, _ = self.transform(pil_image, None)
-        return image_transformed
         
+        # Convert to nested tensor format
+        image_tensor = [image_transformed]
+        nested_tensor = make_nested_tensor(image_tensor)
+        
+        return nested_tensor
+        
+
     def detect(self, image: np.ndarray, config: DetectionConfig):
         """
         Detect objects based on configuration
@@ -144,16 +162,20 @@ class SAMDetector(ObjectDetector):
             image_array = np.array(image)
             
         # Prepare image and text prompt for GroundingDINO
-        image_torch = self.prepare_image(image_array)
+        nested_tensor = self.prepare_image(image_array)
         text_prompt = " . ".join(config.target_classes)
         
-        # Get predictions from GroundingDINO
+        # Move to same device as model
+        device = next(self.grounding_model.parameters()).device
+        nested_tensor = nested_tensor.to(device)
+        
+        # Get predictions
         with torch.no_grad():
-            outputs = self.grounding_model(image_torch, captions=[text_prompt])
+            outputs = self.grounding_model(nested_tensor, captions=[text_prompt])
         
         # Process predictions
-        boxes = outputs['pred_boxes'].cpu().numpy()
-        logits = outputs['pred_logits'].cpu().numpy()
+        boxes = outputs['pred_boxes'][0].cpu().numpy()
+        logits = outputs['pred_logits'][0].cpu().numpy()
         phrases = outputs['pred_phrases']
         
         # Filter by confidence
