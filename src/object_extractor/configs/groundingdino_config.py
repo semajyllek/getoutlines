@@ -20,13 +20,16 @@ nheads = 8
 num_patterns = 0
 text_threshold = 0.25
 box_threshold = 0.35
-pre_norm = True  # Added
-enforce_input_proj = False  # Added
+pre_norm = True
+enforce_input_proj = False
 
 # Transformer
 hidden_dim = 256
 pad_token_id = 0
 max_position_embeddings = 256
+query_dim = 4  # Added
+num_feature_levels = 4  # Added
+nheads_fusion = 8  # Added
 
 # Positional Encoding
 pe_temperatureH = 20
