@@ -100,9 +100,8 @@ class SAMDetector(ObjectDetector):
         self.grounding_model.to(device)
         self.grounding_model.eval()
         
-        # Save transform for later use
         self.transform = T.Compose([
-            RandomResize([800], max_size=1333),
+            RandomResize(target_size=800, max_size=1333),  # Using our custom RandomResize
             T.ToTensor(),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
